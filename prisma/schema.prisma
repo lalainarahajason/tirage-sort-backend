@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Draw {
+  id              String        @id @default(uuid())
+  title           String
+  description     String?
+  status          DrawStatus    @default(DRAFT)
+  scheduledAt     DateTime?
+  settings        Json
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  participants    Participant[]
+  prizes          Prize[]
+  winners         Winner[]
+}
+
+enum DrawStatus {
+  DRAFT
+  READY
+  IN_PROGRESS
+  COMPLETED
+  ARCHIVED
+}
+
+model Participant {
+  id            String   @id @default(uuid())
+  drawId        String
+  draw          Draw     @relation(fields: [drawId], references: [id], onDelete: Cascade)
+  name          String
+  email         String?
+  category      String   @default("STANDARD")
+  ticketCount   Int      @default(1)
+  ticketNumber  String
+  importBatchId String?
+  winners       Winner[]
+
+  @@unique([drawId, ticketNumber])
+}
+
+model Prize {
+  id           String   @id @default(uuid())
+  drawId       String
+  draw         Draw     @relation(fields: [drawId], references: [id], onDelete: Cascade)
+  name         String
+  description  String?
+  quantity     Int
+  category     String?
+  imageUrl     String?
+  displayOrder Int      @default(0)
+  winners      Winner[]
+}
+
+model Winner {
+  id            String      @id @default(uuid())
+  drawId        String
+  draw          Draw        @relation(fields: [drawId], references: [id], onDelete: Cascade)
+  participantId String
+  participant   Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  prizeId       String
+  prize         Prize       @relation(fields: [prizeId], references: [id], onDelete: Cascade)
+  wonAt         DateTime    @default(now())
+
+  @@unique([drawId, prizeId, participantId]) // Prevent duplicate win of same prize in same draw (rule assumption, can be relaxed if needed)
+}
