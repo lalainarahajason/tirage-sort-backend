@@ -5,6 +5,8 @@ const JwtService_1 = require("../../../infrastructure/services/JwtService");
 const AppError_1 = require("../../../shared/errors/AppError");
 const jwtService = new JwtService_1.JwtService();
 const authenticate = (req, res, next) => {
+    // DEBUG LOG
+    console.log(`[AuthMiddleware] Checking ${req.method} ${req.originalUrl}`);
     const authHeader = req.headers.authorization;
     if (!authHeader) {
         return next(new AppError_1.AppError('No token provided', 401));

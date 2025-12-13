@@ -89,3 +89,5 @@ router.post('/draws/:drawId/participants', authenticate_1.authenticate, particip
  *         description: Participants imported
  */
 router.post('/draws/:drawId/participants/import', authenticate_1.authenticate, upload.single('file'), participantController.import.bind(participantController));
+router.delete('/draws/:drawId/participants', authenticate_1.authenticate, participantController.clear.bind(participantController));
+router.delete('/participants/:id', authenticate_1.authenticate, participantController.delete.bind(participantController));

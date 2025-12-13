@@ -9,6 +9,8 @@ const csv_parser_1 = __importDefault(require("csv-parser"));
 const AddParticipantUseCase_1 = require("../../../application/use-cases/participants/AddParticipantUseCase");
 const GetParticipantsUseCase_1 = require("../../../application/use-cases/participants/GetParticipantsUseCase");
 const ImportParticipantsUseCase_1 = require("../../../application/use-cases/participants/ImportParticipantsUseCase");
+const DeleteParticipantUseCase_1 = require("../../../application/use-cases/participants/DeleteParticipantUseCase");
+const ClearParticipantsUseCase_1 = require("../../../application/use-cases/participants/ClearParticipantsUseCase");
 const PrismaParticipantRepository_1 = require("../../../infrastructure/repositories/PrismaParticipantRepository");
 const PrismaDrawRepository_1 = require("../../../infrastructure/repositories/PrismaDrawRepository");
 const AppError_1 = require("../../../shared/errors/AppError");
@@ -17,6 +19,8 @@ const drawRepository = new PrismaDrawRepository_1.PrismaDrawRepository();
 const addParticipantUseCase = new AddParticipantUseCase_1.AddParticipantUseCase(participantRepository, drawRepository);
 const getParticipantsUseCase = new GetParticipantsUseCase_1.GetParticipantsUseCase(participantRepository, drawRepository);
 const importParticipantsUseCase = new ImportParticipantsUseCase_1.ImportParticipantsUseCase(participantRepository, drawRepository);
+const deleteParticipantUseCase = new DeleteParticipantUseCase_1.DeleteParticipantUseCase(participantRepository);
+const clearParticipantsUseCase = new ClearParticipantsUseCase_1.ClearParticipantsUseCase(participantRepository, drawRepository);
 class ParticipantController {
     async create(req, res, next) {
         try {
@@ -70,6 +74,24 @@ class ParticipantController {
                 }
             })
                 .on('error', (err) => next(err));
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+    async delete(req, res, next) {
+        try {
+            await deleteParticipantUseCase.execute(req.params.id);
+            res.status(204).send();
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+    async clear(req, res, next) {
+        try {
+            await clearParticipantsUseCase.execute(req.params.drawId);
+            res.status(204).send();
         }
         catch (error) {
             next(error);

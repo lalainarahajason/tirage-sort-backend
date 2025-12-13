@@ -19,11 +19,31 @@ class PrismaDrawRepository {
     async findById(id) {
         const found = await prismaClient_1.prisma.draw.findUnique({
             where: { id },
+            include: {
+                _count: {
+                    select: {
+                        participants: true,
+                        winners: true,
+                        prizes: true,
+                    },
+                },
+            },
         });
         return found ? this.mapToDomain(found) : null;
     }
     async findAll() {
-        const found = await prismaClient_1.prisma.draw.findMany();
+        const found = await prismaClient_1.prisma.draw.findMany({
+            include: {
+                _count: {
+                    select: {
+                        participants: true,
+                        winners: true,
+                        prizes: true,
+                    },
+                },
+            },
+            orderBy: { createdAt: 'desc' },
+        });
         return found.map(this.mapToDomain);
     }
     async update(id, draw) {
@@ -32,6 +52,15 @@ class PrismaDrawRepository {
             data: {
                 ...draw,
                 settings: draw.settings ? draw.settings : undefined,
+            },
+            include: {
+                _count: {
+                    select: {
+                        participants: true,
+                        winners: true,
+                        prizes: true,
+                    },
+                },
             },
         });
         return this.mapToDomain(updated);
@@ -51,6 +80,11 @@ class PrismaDrawRepository {
             settings: prismaDraw.settings,
             createdAt: prismaDraw.createdAt,
             updatedAt: prismaDraw.updatedAt,
+            _count: prismaDraw._count ? {
+                participants: prismaDraw._count.participants,
+                winners: prismaDraw._count.winners,
+                prizes: prismaDraw._count.prizes,
+            } : undefined,
         };
     }
 }
