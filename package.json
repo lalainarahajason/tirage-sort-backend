@@ -1,0 +1,23 @@
+{
+  "name": "tirage-sort-backend",
+  "version": "1.0.0",
+  "description": "Backend API for lottery/draw system",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "keywords": ["lottery", "draw", "tirage"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^2.2.1",
+    "cors": "^2.8.5",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "jest": "^30.2.0",
+    "supertest": "^7.1.4"
+  }
+}
