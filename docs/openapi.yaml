@@ -1,0 +1,429 @@
+openapi: 3.0.0
+info:
+  title: Tirage au Sort API
+  version: 1.0.0
+  description: API for managing draws, participants, and prizes with real-time capabilities.
+
+servers:
+  - url: http://localhost:3000/api
+    description: Local development
+  - url: https://tirage-sort-backend.vercel.app/api
+    description: Production
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Draw:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [DRAFT, READY, IN_PROGRESS, COMPLETED, ARCHIVED]
+        scheduledAt:
+          type: string
+          format: date-time
+          nullable: true
+        settings:
+          type: object
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        _count:
+          type: object
+          properties:
+            participants:
+              type: integer
+            winners:
+              type: integer
+            prizes:
+              type: integer
+
+    Participant:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        drawId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        ticketNumber:
+          type: integer
+        category:
+          type: string
+        metadata:
+          type: object
+          nullable: true
+
+    Prize:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        drawId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        value:
+          type: number
+        quantity:
+          type: integer
+        imageUrl:
+          type: string
+          nullable: true
+
+security:
+  - bearerAuth: []
+
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - name
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 6
+                name:
+                  type: string
+      responses:
+        '201':
+          description: User created successfully
+        '400':
+          description: Invalid input
+
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login user
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+        '401':
+          description: Invalid credentials
+
+  /draws:
+    get:
+      tags:
+        - Draws
+      summary: Get all draws
+      responses:
+        '200':
+          description: List of draws
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Draw'
+
+    post:
+      tags:
+        - Draws
+      summary: Create a new draw
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - settings
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                scheduledAt:
+                  type: string
+                  format: date-time
+                settings:
+                  type: object
+      responses:
+        '201':
+          description: Draw created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Draw'
+
+  /draws/{id}:
+    get:
+      tags:
+        - Draws
+      summary: Get draw by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Draw details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Draw'
+        '404':
+          description: Draw not found
+
+    patch:
+      tags:
+        - Draws
+      summary: Update a draw
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Draw updated
+
+    delete:
+      tags:
+        - Draws
+      summary: Delete a draw
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Draw deleted
+
+  /draws/{drawId}/participants:
+    get:
+      tags:
+        - Participants
+      summary: Get participants for a draw
+      parameters:
+        - name: drawId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: List of participants
+
+    post:
+      tags:
+        - Participants
+      summary: Add a participant
+      parameters:
+        - name: drawId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                category:
+                  type: string
+      responses:
+        '201':
+          description: Participant added
+
+    delete:
+      tags:
+        - Participants
+      summary: Clear all participants
+      parameters:
+        - name: drawId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: All participants cleared
+
+  /participants/{id}:
+    delete:
+      tags:
+        - Participants
+      summary: Delete a participant
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Participant deleted
+
+  /draws/{drawId}/prizes:
+    get:
+      tags:
+        - Prizes
+      summary: Get prizes for a draw
+      parameters:
+        - name: drawId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of prizes
+
+    post:
+      tags:
+        - Prizes
+      summary: Add a prize
+      parameters:
+        - name: drawId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - quantity
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                value:
+                  type: number
+                quantity:
+                  type: integer
+                imageUrl:
+                  type: string
+      responses:
+        '201':
+          description: Prize added
+
+  /prizes/{id}:
+    patch:
+      tags:
+        - Prizes
+      summary: Update a prize
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Prize updated
+
+    delete:
+      tags:
+        - Prizes
+      summary: Delete a prize
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Prize deleted
