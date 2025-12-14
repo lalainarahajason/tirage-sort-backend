@@ -27,7 +27,23 @@ app.use('/api', prizesRouter);
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './swagger';
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// Swagger UI configuration with custom assets for Vercel compatibility
+const swaggerUiOptions = {
+    customCssUrl: '/swagger-ui/swagger-ui.css',
+    customJs: '/swagger-ui/swagger-ui-bundle.js',
+    swaggerOptions: {
+        url: '/api-docs/swagger.json',
+    }
+};
+
+// Serve Swagger spec as JSON
+app.get('/api-docs/swagger.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(swaggerSpec);
+});
+
+// Serve Swagger UI with custom assets
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
 
 // Error Handler
 app.use(errorHandler);
