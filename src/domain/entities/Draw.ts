@@ -16,6 +16,7 @@ export interface DrawSettings {
 
 export interface Draw {
     id: string;
+    userId: string;
     title: string;
     description?: string | null;
     status: DrawStatus;

@@ -5,7 +5,7 @@ import { randomUUID } from 'crypto';
 export class CreateDrawUseCase {
     constructor(private drawRepository: IDrawRepository) { }
 
-    async execute(dto: {
+    async execute(userId: string, dto: {
         title: string;
         description?: string;
         settings: DrawSettings;
@@ -13,6 +13,7 @@ export class CreateDrawUseCase {
     }) {
         const newDraw: Draw = {
             id: randomUUID(),
+            userId,
             title: dto.title,
             description: dto.description || null,
             status: DrawStatus.DRAFT,

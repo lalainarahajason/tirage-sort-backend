@@ -13,6 +13,7 @@ model User {
   name      String
   role      Role     @default(USER)
   createdAt DateTime @default(now())
+  draws     Draw[]
 }
 
 enum Role {
@@ -22,6 +23,8 @@ enum Role {
 
 model Draw {
   id              String        @id @default(uuid())
+  userId          String
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   title           String
   description     String?
   status          DrawStatus    @default(DRAFT)

@@ -7,6 +7,7 @@ export class PrismaDrawRepository implements IDrawRepository {
         const created = await prisma.draw.create({
             data: {
                 id: draw.id,
+                userId: draw.userId,
                 title: draw.title,
                 description: draw.description,
                 status: draw.status,
@@ -33,8 +34,9 @@ export class PrismaDrawRepository implements IDrawRepository {
         return found ? this.mapToDomain(found) : null;
     }
 
-    async findAll(): Promise<Draw[]> {
+    async findAll(userId: string): Promise<Draw[]> {
         const found = await prisma.draw.findMany({
+            where: { userId },
             include: {
                 _count: {
                     select: {

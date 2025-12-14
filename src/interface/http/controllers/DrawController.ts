@@ -17,7 +17,8 @@ const deleteDrawUseCase = new DeleteDrawUseCase(drawRepository);
 export class DrawController {
     async create(req: Request, res: Response, next: NextFunction) {
         try {
-            const result = await createDrawUseCase.execute(req.body);
+            const userId = (req as any).user.id;
+            const result = await createDrawUseCase.execute(userId, req.body);
             res.status(201).json(result);
         } catch (error) {
             next(error);
@@ -26,7 +27,8 @@ export class DrawController {
 
     async getAll(req: Request, res: Response, next: NextFunction) {
         try {
-            const result = await getDrawsUseCase.execute();
+            const userId = (req as any).user.id;
+            const result = await getDrawsUseCase.execute(userId);
             res.json(result);
         } catch (error) {
             next(error);
