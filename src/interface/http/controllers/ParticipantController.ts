@@ -4,6 +4,7 @@ import csv from 'csv-parser';
 import { AddParticipantUseCase } from '../../../application/use-cases/participants/AddParticipantUseCase';
 import { GetParticipantsUseCase } from '../../../application/use-cases/participants/GetParticipantsUseCase';
 import { ImportParticipantsUseCase } from '../../../application/use-cases/participants/ImportParticipantsUseCase';
+import { UpdateParticipantUseCase } from '../../../application/use-cases/participants/UpdateParticipantUseCase';
 import { DeleteParticipantUseCase } from '../../../application/use-cases/participants/DeleteParticipantUseCase';
 import { ClearParticipantsUseCase } from '../../../application/use-cases/participants/ClearParticipantsUseCase';
 import { PrismaParticipantRepository } from '../../../infrastructure/repositories/PrismaParticipantRepository';
@@ -16,6 +17,7 @@ const drawRepository = new PrismaDrawRepository();
 const addParticipantUseCase = new AddParticipantUseCase(participantRepository, drawRepository);
 const getParticipantsUseCase = new GetParticipantsUseCase(participantRepository, drawRepository);
 const importParticipantsUseCase = new ImportParticipantsUseCase(participantRepository, drawRepository);
+const updateParticipantUseCase = new UpdateParticipantUseCase(participantRepository);
 const deleteParticipantUseCase = new DeleteParticipantUseCase(participantRepository);
 const clearParticipantsUseCase = new ClearParticipantsUseCase(participantRepository, drawRepository);
 
@@ -73,6 +75,15 @@ export class ParticipantController {
                     }
                 })
                 .on('error', (err) => next(err));
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async update(req: Request, res: Response, next: NextFunction) {
+        try {
+            const result = await updateParticipantUseCase.execute(req.params.id, req.body);
+            res.json(result);
         } catch (error) {
             next(error);
         }

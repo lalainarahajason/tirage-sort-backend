@@ -323,6 +323,17 @@ paths:
       responses:
         '200':
           description: List of participants
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Participant'
+                  total:
+                    type: integer
 
     post:
       tags:
@@ -370,6 +381,39 @@ paths:
           description: All participants cleared
 
   /participants/{id}:
+    patch:
+      tags:
+        - Participants
+      summary: Update a participant
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                category:
+                  type: string
+                ticketCount:
+                  type: integer
+      responses:
+        '200':
+          description: Participant updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Participant'
+
     delete:
       tags:
         - Participants
@@ -398,6 +442,12 @@ paths:
       responses:
         '200':
           description: List of prizes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Prize'
 
     post:
       tags:

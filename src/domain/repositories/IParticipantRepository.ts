@@ -19,6 +19,7 @@ export interface IParticipantRepository {
     createMany(participants: Participant[]): Promise<number>;
     findByDrawId(drawId: string, options?: PaginationOptions): Promise<PaginatedResult<Participant>>;
     findById(id: string): Promise<Participant | null>;
+    update(id: string, data: Partial<Participant>): Promise<Participant>;
     delete(id: string): Promise<void>;
     deleteAllByDrawId(drawId: string): Promise<void>;
     countByDrawId(drawId: string): Promise<number>;

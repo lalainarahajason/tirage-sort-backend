@@ -70,6 +70,19 @@ export class PrismaParticipantRepository implements IParticipantRepository {
         return found ? this.mapToDomain(found) : null;
     }
 
+    async update(id: string, data: Partial<Participant>): Promise<Participant> {
+        const updated = await prisma.participant.update({
+            where: { id },
+            data: {
+                name: data.name,
+                email: data.email,
+                category: data.category,
+                ticketCount: data.ticketCount,
+            },
+        });
+        return this.mapToDomain(updated);
+    }
+
     async delete(id: string): Promise<void> {
         await prisma.participant.delete({ where: { id } });
     }
