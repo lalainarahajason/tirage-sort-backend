@@ -26,29 +26,25 @@ app.use('/api', prizesRouter);
 
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './swagger';
-import express from 'express';
-import path from 'path';
 
-// Serve static Swagger UI assets
-app.use('/swagger-ui', express.static(path.join(__dirname, '../../../public/swagger-ui-dist')));
+// Swagger UI only works in development (express.static doesn't work on Vercel serverless)
+if (process.env.NODE_ENV !== 'production') {
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+} else {
+    // In production, serve only the JSON spec
+    app.get('/api-docs/swagger.json', (req, res) => {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(swaggerSpec);
+    });
 
-// Swagger UI configuration with custom assets for Vercel compatibility
-const swaggerUiOptions = {
-    customCssUrl: '/swagger-ui/swagger-ui.css',
-    customJs: [
-        '/swagger-ui/swagger-ui-bundle.js',
-        '/swagger-ui/swagger-ui-standalone-preset.js'
-    ]
-};
-
-// Serve Swagger spec as JSON
-app.get('/api-docs/swagger.json', (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.send(swaggerSpec);
-});
-
-// Serve Swagger UI with custom assets
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
+    app.get('/api-docs', (req, res) => {
+        res.json({
+            message: 'API Documentation',
+            spec: '/api-docs/swagger.json',
+            note: 'Use tools like Postman or Swagger Editor to view the spec'
+        });
+    });
+}
 
 // Error Handler
 app.use(errorHandler);
