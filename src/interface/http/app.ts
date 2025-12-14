@@ -26,14 +26,19 @@ app.use('/api', prizesRouter);
 
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './swagger';
+import express from 'express';
+import path from 'path';
+
+// Serve static Swagger UI assets
+app.use('/swagger-ui', express.static(path.join(__dirname, '../../../public/swagger-ui-dist')));
 
 // Swagger UI configuration with custom assets for Vercel compatibility
 const swaggerUiOptions = {
     customCssUrl: '/swagger-ui/swagger-ui.css',
-    customJs: '/swagger-ui/swagger-ui-bundle.js',
-    swaggerOptions: {
-        url: '/api-docs/swagger.json',
-    }
+    customJs: [
+        '/swagger-ui/swagger-ui-bundle.js',
+        '/swagger-ui/swagger-ui-standalone-preset.js'
+    ]
 };
 
 // Serve Swagger spec as JSON
