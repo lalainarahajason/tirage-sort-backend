@@ -24,6 +24,10 @@ components:
         id:
           type: string
           format: uuid
+        userId:
+          type: string
+          format: uuid
+          description: ID of the user who owns this draw
         title:
           type: string
         description:
