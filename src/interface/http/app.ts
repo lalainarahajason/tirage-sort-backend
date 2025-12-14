@@ -24,27 +24,6 @@ app.use('/api', drawsRouter);
 app.use('/api', participantsRouter);
 app.use('/api', prizesRouter);
 
-import swaggerUi from 'swagger-ui-express';
-import { swaggerSpec } from './swagger';
-
-// Swagger UI only works in development (express.static doesn't work on Vercel serverless)
-if (process.env.NODE_ENV !== 'production') {
-    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-} else {
-    // In production, serve only the JSON spec
-    app.get('/api-docs/swagger.json', (req, res) => {
-        res.setHeader('Content-Type', 'application/json');
-        res.send(swaggerSpec);
-    });
-
-    app.get('/api-docs', (req, res) => {
-        res.json({
-            message: 'API Documentation',
-            spec: '/api-docs/swagger.json',
-            note: 'Use tools like Postman or Swagger Editor to view the spec'
-        });
-    });
-}
 
 // Error Handler
 app.use(errorHandler);
