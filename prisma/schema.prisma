@@ -22,19 +22,23 @@ enum Role {
 }
 
 model Draw {
-  id              String        @id @default(uuid())
+  id              String         @id @default(uuid())
   userId          String
-  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   title           String
   description     String?
-  status          DrawStatus    @default(DRAFT)
+  status          DrawStatus     @default(DRAFT)
+  visibility      DrawVisibility @default(PUBLIC)
+  shareToken      String?        @unique
   scheduledAt     DateTime?
   settings        Json
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
   participants    Participant[]
   prizes          Prize[]
   winners         Winner[]
+
+  @@index([shareToken])
 }
 
 enum DrawStatus {
@@ -43,6 +47,12 @@ enum DrawStatus {
   IN_PROGRESS
   COMPLETED
   ARCHIVED
+}
+
+enum DrawVisibility {
+  PUBLIC
+  SHARED
+  PRIVATE
 }
 
 model Participant {

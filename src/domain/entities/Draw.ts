@@ -6,6 +6,12 @@ export enum DrawStatus {
     ARCHIVED = 'ARCHIVED',
 }
 
+export enum DrawVisibility {
+    PUBLIC = 'PUBLIC',
+    SHARED = 'SHARED',
+    PRIVATE = 'PRIVATE',
+}
+
 export interface DrawSettings {
     mode: 'WITH_REPLACEMENT' | 'NO_REPLACEMENT';
     type: 'UNIQUE' | 'SEQUENTIAL';
@@ -20,6 +26,8 @@ export interface Draw {
     title: string;
     description?: string | null;
     status: DrawStatus;
+    visibility: DrawVisibility;
+    shareToken?: string | null;
     scheduledAt?: Date | null;
     settings: DrawSettings;
     createdAt: Date;

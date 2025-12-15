@@ -2,6 +2,7 @@ import { Router } from 'express';
 import multer from 'multer';
 import { ParticipantController } from '../controllers/ParticipantController';
 import { authenticate } from '../middlewares/authenticate';
+import { checkDrawAccess } from '../middlewares/checkDrawAccess';
 
 const router = Router();
 const participantController = new ParticipantController();
@@ -13,14 +14,17 @@ const upload = multer({ storage: multer.memoryStorage() });
  *   get:
  *     summary: Get participants for a draw
  *     tags: [Participants]
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: drawId
  *         required: true
  *         schema:
  *           type: string
+ *       - in: query
+ *         name: shareToken
+ *         schema:
+ *           type: string
+ *         description: Share token for shared draws
  *     responses:
  *       200:
  *         description: List of participants
@@ -54,7 +58,7 @@ const upload = multer({ storage: multer.memoryStorage() });
  *       201:
  *         description: Participant added
  */
-router.get('/draws/:drawId/participants', authenticate, participantController.getAll.bind(participantController));
+router.get('/draws/:drawId/participants', checkDrawAccess, participantController.getAll.bind(participantController));
 router.post('/draws/:drawId/participants', authenticate, participantController.create.bind(participantController));
 
 /**

@@ -9,6 +9,7 @@ const csv_parser_1 = __importDefault(require("csv-parser"));
 const AddParticipantUseCase_1 = require("../../../application/use-cases/participants/AddParticipantUseCase");
 const GetParticipantsUseCase_1 = require("../../../application/use-cases/participants/GetParticipantsUseCase");
 const ImportParticipantsUseCase_1 = require("../../../application/use-cases/participants/ImportParticipantsUseCase");
+const UpdateParticipantUseCase_1 = require("../../../application/use-cases/participants/UpdateParticipantUseCase");
 const DeleteParticipantUseCase_1 = require("../../../application/use-cases/participants/DeleteParticipantUseCase");
 const ClearParticipantsUseCase_1 = require("../../../application/use-cases/participants/ClearParticipantsUseCase");
 const PrismaParticipantRepository_1 = require("../../../infrastructure/repositories/PrismaParticipantRepository");
@@ -19,6 +20,7 @@ const drawRepository = new PrismaDrawRepository_1.PrismaDrawRepository();
 const addParticipantUseCase = new AddParticipantUseCase_1.AddParticipantUseCase(participantRepository, drawRepository);
 const getParticipantsUseCase = new GetParticipantsUseCase_1.GetParticipantsUseCase(participantRepository, drawRepository);
 const importParticipantsUseCase = new ImportParticipantsUseCase_1.ImportParticipantsUseCase(participantRepository, drawRepository);
+const updateParticipantUseCase = new UpdateParticipantUseCase_1.UpdateParticipantUseCase(participantRepository);
 const deleteParticipantUseCase = new DeleteParticipantUseCase_1.DeleteParticipantUseCase(participantRepository);
 const clearParticipantsUseCase = new ClearParticipantsUseCase_1.ClearParticipantsUseCase(participantRepository, drawRepository);
 class ParticipantController {
@@ -74,6 +76,15 @@ class ParticipantController {
                 }
             })
                 .on('error', (err) => next(err));
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+    async update(req, res, next) {
+        try {
+            const result = await updateParticipantUseCase.execute(req.params.id, req.body);
+            res.json(result);
         }
         catch (error) {
             next(error);

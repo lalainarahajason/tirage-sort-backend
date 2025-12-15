@@ -4,6 +4,7 @@ exports.drawsRouter = void 0;
 const express_1 = require("express");
 const DrawController_1 = require("../controllers/DrawController");
 const authenticate_1 = require("../middlewares/authenticate");
+const checkDrawAccess_1 = require("../middlewares/checkDrawAccess");
 const router = (0, express_1.Router)();
 exports.drawsRouter = router;
 const drawController = new DrawController_1.DrawController();
@@ -93,6 +94,32 @@ router.get('/draws', authenticate_1.authenticate, drawController.getAll.bind(dra
  *       204:
  *         description: Draw deleted
  */
-router.get('/draws/:id', authenticate_1.authenticate, drawController.getOne.bind(drawController));
+router.get('/draws/:id', checkDrawAccess_1.checkDrawAccess, drawController.getOne.bind(drawController));
 router.patch('/draws/:id', authenticate_1.authenticate, drawController.update.bind(drawController));
 router.delete('/draws/:id', authenticate_1.authenticate, drawController.delete.bind(drawController));
+/**
+ * @swagger
+ * /draws/{id}/share:
+ *   post:
+ *     summary: Generate a share token for a draw
+ *     tags: [Draws]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Share token generated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 shareToken:
+ *                   type: string
+ */
+router.post('/draws/:id/share', authenticate_1.authenticate, drawController.generateShareToken.bind(drawController));

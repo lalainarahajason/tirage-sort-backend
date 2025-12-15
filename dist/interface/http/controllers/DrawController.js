@@ -6,6 +6,7 @@ const GetDrawsUseCase_1 = require("../../../application/use-cases/draws/GetDraws
 const GetDrawUseCase_1 = require("../../../application/use-cases/draws/GetDrawUseCase");
 const UpdateDrawUseCase_1 = require("../../../application/use-cases/draws/UpdateDrawUseCase");
 const DeleteDrawUseCase_1 = require("../../../application/use-cases/draws/DeleteDrawUseCase");
+const GenerateShareToken_1 = require("../../../application/use-cases/GenerateShareToken");
 const PrismaDrawRepository_1 = require("../../../infrastructure/repositories/PrismaDrawRepository");
 const drawRepository = new PrismaDrawRepository_1.PrismaDrawRepository();
 const createDrawUseCase = new CreateDrawUseCase_1.CreateDrawUseCase(drawRepository);
@@ -13,10 +14,12 @@ const getDrawsUseCase = new GetDrawsUseCase_1.GetDrawsUseCase(drawRepository);
 const getDrawUseCase = new GetDrawUseCase_1.GetDrawUseCase(drawRepository);
 const updateDrawUseCase = new UpdateDrawUseCase_1.UpdateDrawUseCase(drawRepository);
 const deleteDrawUseCase = new DeleteDrawUseCase_1.DeleteDrawUseCase(drawRepository);
+const generateShareTokenUseCase = new GenerateShareToken_1.GenerateShareToken(drawRepository);
 class DrawController {
     async create(req, res, next) {
         try {
-            const result = await createDrawUseCase.execute(req.body);
+            const userId = req.user.id;
+            const result = await createDrawUseCase.execute(userId, req.body);
             res.status(201).json(result);
         }
         catch (error) {
@@ -25,7 +28,8 @@ class DrawController {
     }
     async getAll(req, res, next) {
         try {
-            const result = await getDrawsUseCase.execute();
+            const userId = req.user.id;
+            const result = await getDrawsUseCase.execute(userId);
             res.json(result);
         }
         catch (error) {
@@ -54,6 +58,17 @@ class DrawController {
         try {
             await deleteDrawUseCase.execute(req.params.id);
             res.status(204).send();
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+    async generateShareToken(req, res, next) {
+        try {
+            const userId = req.user.id;
+            const drawId = req.params.id;
+            const shareToken = await generateShareTokenUseCase.execute(drawId, userId);
+            res.json({ shareToken });
         }
         catch (error) {
             next(error);

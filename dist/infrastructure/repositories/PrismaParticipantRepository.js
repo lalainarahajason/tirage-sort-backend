@@ -57,6 +57,18 @@ class PrismaParticipantRepository {
         });
         return found ? this.mapToDomain(found) : null;
     }
+    async update(id, data) {
+        const updated = await prismaClient_1.prisma.participant.update({
+            where: { id },
+            data: {
+                name: data.name,
+                email: data.email,
+                category: data.category,
+                ticketCount: data.ticketCount,
+            },
+        });
+        return this.mapToDomain(updated);
+    }
     async delete(id) {
         await prismaClient_1.prisma.participant.delete({ where: { id } });
     }

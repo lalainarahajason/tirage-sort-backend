@@ -5,8 +5,8 @@ class GetDrawsUseCase {
     constructor(drawRepository) {
         this.drawRepository = drawRepository;
     }
-    async execute() {
-        return this.drawRepository.findAll();
+    async execute(userId) {
+        return this.drawRepository.findAll(userId);
     }
 }
 exports.GetDrawsUseCase = GetDrawsUseCase;

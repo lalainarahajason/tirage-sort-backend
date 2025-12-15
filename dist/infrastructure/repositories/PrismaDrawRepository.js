@@ -7,9 +7,12 @@ class PrismaDrawRepository {
         const created = await prismaClient_1.prisma.draw.create({
             data: {
                 id: draw.id,
+                userId: draw.userId,
                 title: draw.title,
                 description: draw.description,
                 status: draw.status,
+                visibility: draw.visibility,
+                shareToken: draw.shareToken,
                 scheduledAt: draw.scheduledAt,
                 settings: draw.settings, // Cast to any to satisfy Prisma Json input
             },
@@ -31,8 +34,9 @@ class PrismaDrawRepository {
         });
         return found ? this.mapToDomain(found) : null;
     }
-    async findAll() {
+    async findAll(userId) {
         const found = await prismaClient_1.prisma.draw.findMany({
+            where: { userId },
             include: {
                 _count: {
                     select: {
@@ -73,9 +77,12 @@ class PrismaDrawRepository {
     mapToDomain(prismaDraw) {
         return {
             id: prismaDraw.id,
+            userId: prismaDraw.userId,
             title: prismaDraw.title,
             description: prismaDraw.description,
             status: prismaDraw.status,
+            visibility: prismaDraw.visibility,
+            shareToken: prismaDraw.shareToken,
             scheduledAt: prismaDraw.scheduledAt,
             settings: prismaDraw.settings,
             createdAt: prismaDraw.createdAt,

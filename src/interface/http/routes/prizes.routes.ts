@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { PrizeController } from '../controllers/PrizeController';
 import { authenticate } from '../middlewares/authenticate';
+import { checkDrawAccess } from '../middlewares/checkDrawAccess';
 
 const router = Router();
 const prizeController = new PrizeController();
@@ -11,14 +12,17 @@ const prizeController = new PrizeController();
  *   get:
  *     summary: Get prizes for a draw
  *     tags: [Prizes]
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: drawId
  *         required: true
  *         schema:
  *           type: string
+ *       - in: query
+ *         name: shareToken
+ *         schema:
+ *           type: string
+ *         description: Share token for shared draws
  *     responses:
  *       200:
  *         description: List of prizes
@@ -51,7 +55,7 @@ const prizeController = new PrizeController();
  *       201:
  *         description: Prize added
  */
-router.get('/draws/:drawId/prizes', authenticate, prizeController.getAll.bind(prizeController));
+router.get('/draws/:drawId/prizes', checkDrawAccess, prizeController.getAll.bind(prizeController));
 router.post('/draws/:drawId/prizes', authenticate, prizeController.create.bind(prizeController));
 
 /**

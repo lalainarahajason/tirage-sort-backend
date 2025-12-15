@@ -42,6 +42,16 @@ components:
           nullable: true
         settings:
           type: object
+        visibility:
+          type: string
+          enum: [PUBLIC, SHARED, PRIVATE]
+          default: PUBLIC
+          description: Draw visibility level (PUBLIC=anyone, SHARED=with token, PRIVATE=owner only)
+        shareToken:
+          type: string
+          format: uuid
+          nullable: true
+          description: Token for accessing SHARED draws
         createdAt:
           type: string
           format: date-time
@@ -250,12 +260,20 @@ paths:
       tags:
         - Draws
       summary: Get draw by ID
+      security: []
+      description: Access depends on visibility level. PUBLIC draws are open. SHARED draws require shareToken. PRIVATE requires authentication.
       parameters:
         - name: id
           in: path
           required: true
           schema:
             type: string
+        - name: shareToken
+          in: query
+          description: Token for accessing SHARED draws
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Draw details
@@ -263,6 +281,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Draw'
+        '403':
+          description: Access denied (invalid shareToken or private draw)
         '404':
           description: Draw not found
 
@@ -281,6 +301,14 @@ paths:
           application/json:
             schema:
               type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                visibility:
+                  type: string
+                  enum: [PUBLIC, SHARED, PRIVATE]
       responses:
         '200':
           description: Draw updated
@@ -298,6 +326,34 @@ paths:
       responses:
         '204':
           description: Draw deleted
+
+  /draws/{id}/share:
+    post:
+      tags:
+        - Draws
+      summary: Generate a share token for a draw
+      description: Generates a unique share token for the draw and sets visibility to SHARED
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Share token generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  shareToken:
+                    type: string
+                    format: uuid
+        '404':
+          description: Draw not found
+        '401':
+          description: Unauthorized - must be draw owner
 
   /draws/{drawId}/participants:
     get:

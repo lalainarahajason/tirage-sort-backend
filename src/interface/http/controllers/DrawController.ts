@@ -4,6 +4,7 @@ import { GetDrawsUseCase } from '../../../application/use-cases/draws/GetDrawsUs
 import { GetDrawUseCase } from '../../../application/use-cases/draws/GetDrawUseCase';
 import { UpdateDrawUseCase } from '../../../application/use-cases/draws/UpdateDrawUseCase';
 import { DeleteDrawUseCase } from '../../../application/use-cases/draws/DeleteDrawUseCase';
+import { GenerateShareToken } from '../../../application/use-cases/GenerateShareToken';
 import { PrismaDrawRepository } from '../../../infrastructure/repositories/PrismaDrawRepository';
 
 const drawRepository = new PrismaDrawRepository();
@@ -13,6 +14,7 @@ const getDrawsUseCase = new GetDrawsUseCase(drawRepository);
 const getDrawUseCase = new GetDrawUseCase(drawRepository);
 const updateDrawUseCase = new UpdateDrawUseCase(drawRepository);
 const deleteDrawUseCase = new DeleteDrawUseCase(drawRepository);
+const generateShareTokenUseCase = new GenerateShareToken(drawRepository);
 
 export class DrawController {
     async create(req: Request, res: Response, next: NextFunction) {
@@ -57,6 +59,17 @@ export class DrawController {
         try {
             await deleteDrawUseCase.execute(req.params.id);
             res.status(204).send();
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async generateShareToken(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = (req as any).user.id;
+            const drawId = req.params.id;
+            const shareToken = await generateShareTokenUseCase.execute(drawId, userId);
+            res.json({ shareToken });
         } catch (error) {
             next(error);
         }

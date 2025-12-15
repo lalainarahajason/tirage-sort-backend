@@ -1,5 +1,5 @@
 import { IDrawRepository } from '../../domain/repositories/IDrawRepository';
-import { Draw, DrawSettings, DrawStatus } from '../../domain/entities/Draw';
+import { Draw, DrawSettings, DrawStatus, DrawVisibility } from '../../domain/entities/Draw';
 import { prisma } from '../database/prismaClient';
 
 export class PrismaDrawRepository implements IDrawRepository {
@@ -11,6 +11,8 @@ export class PrismaDrawRepository implements IDrawRepository {
                 title: draw.title,
                 description: draw.description,
                 status: draw.status,
+                visibility: draw.visibility,
+                shareToken: draw.shareToken,
                 scheduledAt: draw.scheduledAt,
                 settings: draw.settings as any, // Cast to any to satisfy Prisma Json input
             },
@@ -80,9 +82,12 @@ export class PrismaDrawRepository implements IDrawRepository {
     private mapToDomain(prismaDraw: any): Draw {
         return {
             id: prismaDraw.id,
+            userId: prismaDraw.userId,
             title: prismaDraw.title,
             description: prismaDraw.description,
             status: prismaDraw.status as DrawStatus,
+            visibility: prismaDraw.visibility as DrawVisibility,
+            shareToken: prismaDraw.shareToken,
             scheduledAt: prismaDraw.scheduledAt,
             settings: prismaDraw.settings as unknown as DrawSettings,
             createdAt: prismaDraw.createdAt,

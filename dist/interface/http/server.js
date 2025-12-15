@@ -7,6 +7,11 @@ require("dotenv/config");
 const app_1 = __importDefault(require("./app"));
 const logger_1 = require("../../shared/utils/logger");
 const PORT = process.env.PORT || 3000;
-app_1.default.listen(PORT, () => {
-    logger_1.logger.info(`Server is running on port ${PORT}`);
-});
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+    app_1.default.listen(PORT, () => {
+        logger_1.logger.info(`Server is running on port ${PORT}`);
+    });
+}
+// Export for Vercel
+exports.default = app_1.default;
