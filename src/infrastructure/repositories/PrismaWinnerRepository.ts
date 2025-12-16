@@ -38,6 +38,31 @@ export class PrismaWinnerRepository implements IWinnerRepository {
         return winners.map(this.mapToDomain);
     }
 
+    async findByDrawIdWithDetails(drawId: string): Promise<any[]> {
+        const winners = await prisma.winner.findMany({
+            where: { drawId },
+            include: {
+                participant: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        ticketNumber: true,
+                    },
+                },
+                prize: {
+                    select: {
+                        id: true,
+                        name: true,
+                        description: true,
+                    },
+                },
+            },
+            orderBy: { wonAt: 'asc' },
+        });
+        return winners;
+    }
+
     async deleteAllByDrawId(drawId: string): Promise<void> {
         await prisma.winner.deleteMany({ where: { drawId } });
     }

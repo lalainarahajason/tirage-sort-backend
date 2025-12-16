@@ -35,6 +35,30 @@ class PrismaWinnerRepository {
         });
         return winners.map(this.mapToDomain);
     }
+    async findByDrawIdWithDetails(drawId) {
+        const winners = await prismaClient_1.prisma.winner.findMany({
+            where: { drawId },
+            include: {
+                participant: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        ticketNumber: true,
+                    },
+                },
+                prize: {
+                    select: {
+                        id: true,
+                        name: true,
+                        description: true,
+                    },
+                },
+            },
+            orderBy: { wonAt: 'asc' },
+        });
+        return winners;
+    }
     async deleteAllByDrawId(drawId) {
         await prismaClient_1.prisma.winner.deleteMany({ where: { drawId } });
     }
