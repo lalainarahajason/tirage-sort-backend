@@ -116,6 +116,25 @@ components:
           type: string
           nullable: true
 
+    Winner:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        drawId:
+          type: string
+          format: uuid
+        participantId:
+          type: string
+          format: uuid
+        prizeId:
+          type: string
+          format: uuid
+        wonAt:
+          type: string
+          format: date-time
+
     User:
       type: object
       properties:
@@ -595,3 +614,44 @@ paths:
           description: Access denied - Draw is private
         '404':
           description: Draw not found
+
+  /cron/process-scheduled-draws:
+    post:
+      tags:
+        - Cron
+      summary: Process scheduled draws (Vercel Cron)
+      description: |
+        Called by Vercel Cron every minute. Finds draws where scheduledAt has passed
+        and status is not COMPLETED/IN_PROGRESS/ARCHIVED. Executes each draw by selecting 
+        random winners and updating status to COMPLETED.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Scheduled draws processed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  processedCount:
+                    type: integer
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        drawId:
+                          type: string
+                        success:
+                          type: boolean
+                        winnersCount:
+                          type: integer
+                        error:
+                          type: string
+        '401':
+          description: Unauthorized - Invalid CRON_SECRET
+        '500':
+          description: CRON_SECRET not configured

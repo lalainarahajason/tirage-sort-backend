@@ -109,12 +109,39 @@ Based on the TypeScript interfaces defined in `frontend/types/schemas.ts`.
 
 ---
 
-## 4. Draw Execution (Real-time)
+## 4. Winners
 
-*Pending Protocol Definition* via Socket.io.
+### Models
+**Winner**
+```typescript
+{
+  id: string; // UUID
+  drawId: string; // UUID
+  participantId: string; // UUID
+  prizeId: string; // UUID
+  wonAt: string; // ISO Date
+}
+```
+
+### Endpoints
+| Type | Method | Path | Description | Request Body | Response |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **List** | `GET` | `/api/draws/:drawId/winners` | Get winners for a draw | - | `Winner[]` |
+
 ---
 
-## 5. Authentication
+## 5. Cron (Vercel)
+
+### Endpoints
+| Type | Method | Path | Description | Request Body | Response |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Process** | `POST` | `/api/cron/process-scheduled-draws` | Execute scheduled draws (Vercel Cron) | - (Bearer: CRON_SECRET) | `{ success, processedCount, results[] }` |
+
+> **Note**: This endpoint is called automatically by Vercel Cron every minute. It finds draws where `scheduledAt` has passed and executes them.
+
+---
+
+## 6. Authentication
 
 ### Models
 **User**
