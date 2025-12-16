@@ -59,6 +59,7 @@ const upload = multer({ storage: multer.memoryStorage() });
  *         description: Participant added
  */
 router.get('/draws/:drawId/participants', checkDrawAccess, participantController.getAll.bind(participantController));
+router.get('/participants/history', authenticate, participantController.getHistory.bind(participantController));
 router.post('/draws/:drawId/participants', authenticate, participantController.create.bind(participantController));
 
 /**

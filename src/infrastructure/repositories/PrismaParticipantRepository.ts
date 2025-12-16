@@ -103,6 +103,18 @@ export class PrismaParticipantRepository implements IParticipantRepository {
         return prisma.participant.count({ where: { drawId } });
     }
 
+    async findDistinctByUserId(userId: string): Promise<Participant[]> {
+        const found = await prisma.participant.findMany({
+            where: {
+                draw: { userId },
+            },
+            distinct: ['email', 'name'],
+            orderBy: { name: 'asc' },
+            take: 100, // Limit to 100 most recent/relevant to avoid huge payloads
+        });
+        return found.map(this.mapToDomain);
+    }
+
     private mapToDomain(p: any): Participant {
         return {
             id: p.id,

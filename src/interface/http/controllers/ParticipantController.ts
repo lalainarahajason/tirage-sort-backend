@@ -11,6 +11,8 @@ import { PrismaParticipantRepository } from '../../../infrastructure/repositorie
 import { PrismaDrawRepository } from '../../../infrastructure/repositories/PrismaDrawRepository';
 import { AppError } from '../../../shared/errors/AppError';
 
+import { GetParticipantHistoryUseCase } from '../../../application/use-cases/participants/GetParticipantHistoryUseCase';
+
 const participantRepository = new PrismaParticipantRepository();
 const drawRepository = new PrismaDrawRepository();
 
@@ -20,8 +22,19 @@ const importParticipantsUseCase = new ImportParticipantsUseCase(participantRepos
 const updateParticipantUseCase = new UpdateParticipantUseCase(participantRepository);
 const deleteParticipantUseCase = new DeleteParticipantUseCase(participantRepository);
 const clearParticipantsUseCase = new ClearParticipantsUseCase(participantRepository, drawRepository);
+const getParticipantHistoryUseCase = new GetParticipantHistoryUseCase(participantRepository);
 
 export class ParticipantController {
+    async getHistory(req: Request, res: Response, next: NextFunction) {
+        try {
+            if (!req.user || !req.user.id) throw new AppError('Unauthorized', 401);
+            const result = await getParticipantHistoryUseCase.execute(req.user.id);
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async create(req: Request, res: Response, next: NextFunction) {
         try {
             const result = await addParticipantUseCase.execute({
