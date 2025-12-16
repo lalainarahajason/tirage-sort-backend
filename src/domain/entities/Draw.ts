@@ -28,6 +28,7 @@ export interface Draw {
     status: DrawStatus;
     visibility: DrawVisibility;
     shareToken?: string | null;
+    shortCode?: string | null;
     scheduledAt?: Date | null;
     settings: DrawSettings;
     createdAt: Date;

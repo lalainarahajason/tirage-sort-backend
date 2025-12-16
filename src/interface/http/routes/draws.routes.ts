@@ -124,4 +124,27 @@ router.delete('/draws/:id', authenticate, drawController.delete.bind(drawControl
  */
 router.post('/draws/:id/share', authenticate, drawController.generateShareToken.bind(drawController));
 
+/**
+ * @swagger
+ * /s/{code}:
+ *   get:
+ *     summary: Get a draw by short code
+ *     tags: [Draws]
+ *     parameters:
+ *       - in: path
+ *         name: code
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 8-character short code for the draw
+ *     responses:
+ *       200:
+ *         description: Draw details
+ *       403:
+ *         description: Access denied (private draw)
+ *       404:
+ *         description: Draw not found
+ */
+router.get('/s/:code', drawController.getByShortCode.bind(drawController));
+
 export { router as drawsRouter };

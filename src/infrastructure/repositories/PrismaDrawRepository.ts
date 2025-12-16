@@ -36,6 +36,22 @@ export class PrismaDrawRepository implements IDrawRepository {
         return found ? this.mapToDomain(found) : null;
     }
 
+    async findByShortCode(shortCode: string): Promise<Draw | null> {
+        const found = await prisma.draw.findUnique({
+            where: { shortCode },
+            include: {
+                _count: {
+                    select: {
+                        participants: true,
+                        winners: true,
+                        prizes: true,
+                    },
+                },
+            },
+        });
+        return found ? this.mapToDomain(found) : null;
+    }
+
     async findAll(userId: string): Promise<Draw[]> {
         const found = await prisma.draw.findMany({
             where: { userId },
@@ -88,6 +104,7 @@ export class PrismaDrawRepository implements IDrawRepository {
             status: prismaDraw.status as DrawStatus,
             visibility: prismaDraw.visibility as DrawVisibility,
             shareToken: prismaDraw.shareToken,
+            shortCode: prismaDraw.shortCode,
             scheduledAt: prismaDraw.scheduledAt,
             settings: prismaDraw.settings as unknown as DrawSettings,
             createdAt: prismaDraw.createdAt,

@@ -30,6 +30,7 @@ model Draw {
   status          DrawStatus     @default(DRAFT)
   visibility      DrawVisibility @default(PUBLIC)
   shareToken      String?        @unique
+  shortCode       String?        @unique
   scheduledAt     DateTime?
   settings        Json
   createdAt       DateTime       @default(now())
@@ -39,6 +40,7 @@ model Draw {
   winners         Winner[]
 
   @@index([shareToken])
+  @@index([shortCode])
 }
 
 enum DrawStatus {
