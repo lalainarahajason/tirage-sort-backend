@@ -103,14 +103,30 @@ export class PrismaParticipantRepository implements IParticipantRepository {
         return prisma.participant.count({ where: { drawId } });
     }
 
-    async findDistinctByUserId(userId: string): Promise<Participant[]> {
+    async findDistinctByUserId(userId: string, excludeDrawId?: string): Promise<Participant[]> {
+        let excludedEmails: string[] = [];
+        if (excludeDrawId) {
+            const excluded = await prisma.participant.findMany({
+                where: { drawId: excludeDrawId },
+                select: { email: true },
+            });
+            excludedEmails = excluded.map(p => p.email).filter((e): e is string => !!e);
+        }
+
         const found = await prisma.participant.findMany({
             where: {
                 draw: { userId },
+                email: excludedEmails.length > 0 ? { notIn: excludedEmails } : undefined,
+                // Exclude those without email? If email is null, distinct might group them or treat as one?
+                // distinct ['email'] on nulls?
+                // If email is null, we can't really "reuse" efficiently based on email.
+                // It's better to only return those with emails for history reuse.
+                // Assuming history reuse is primarily for named+email contacts.
+                NOT: { email: null },
             },
             distinct: ['email', 'name'],
             orderBy: { name: 'asc' },
-            take: 100, // Limit to 100 most recent/relevant to avoid huge payloads
+            take: 100,
         });
         return found.map(this.mapToDomain);
     }
