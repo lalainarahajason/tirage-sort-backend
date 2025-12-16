@@ -6,13 +6,15 @@ import { UpdateDrawUseCase } from '../../../application/use-cases/draws/UpdateDr
 import { DeleteDrawUseCase } from '../../../application/use-cases/draws/DeleteDrawUseCase';
 import { GenerateShareToken } from '../../../application/use-cases/GenerateShareToken';
 import { PrismaDrawRepository } from '../../../infrastructure/repositories/PrismaDrawRepository';
+import { PrismaWinnerRepository } from '../../../infrastructure/repositories/PrismaWinnerRepository';
 
 const drawRepository = new PrismaDrawRepository();
+const winnerRepository = new PrismaWinnerRepository();
 
 const createDrawUseCase = new CreateDrawUseCase(drawRepository);
 const getDrawsUseCase = new GetDrawsUseCase(drawRepository);
 const getDrawUseCase = new GetDrawUseCase(drawRepository);
-const updateDrawUseCase = new UpdateDrawUseCase(drawRepository);
+const updateDrawUseCase = new UpdateDrawUseCase(drawRepository, winnerRepository);
 const deleteDrawUseCase = new DeleteDrawUseCase(drawRepository);
 const generateShareTokenUseCase = new GenerateShareToken(drawRepository);
 

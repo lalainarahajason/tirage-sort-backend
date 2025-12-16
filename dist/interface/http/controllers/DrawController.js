@@ -8,11 +8,13 @@ const UpdateDrawUseCase_1 = require("../../../application/use-cases/draws/Update
 const DeleteDrawUseCase_1 = require("../../../application/use-cases/draws/DeleteDrawUseCase");
 const GenerateShareToken_1 = require("../../../application/use-cases/GenerateShareToken");
 const PrismaDrawRepository_1 = require("../../../infrastructure/repositories/PrismaDrawRepository");
+const PrismaWinnerRepository_1 = require("../../../infrastructure/repositories/PrismaWinnerRepository");
 const drawRepository = new PrismaDrawRepository_1.PrismaDrawRepository();
+const winnerRepository = new PrismaWinnerRepository_1.PrismaWinnerRepository();
 const createDrawUseCase = new CreateDrawUseCase_1.CreateDrawUseCase(drawRepository);
 const getDrawsUseCase = new GetDrawsUseCase_1.GetDrawsUseCase(drawRepository);
 const getDrawUseCase = new GetDrawUseCase_1.GetDrawUseCase(drawRepository);
-const updateDrawUseCase = new UpdateDrawUseCase_1.UpdateDrawUseCase(drawRepository);
+const updateDrawUseCase = new UpdateDrawUseCase_1.UpdateDrawUseCase(drawRepository, winnerRepository);
 const deleteDrawUseCase = new DeleteDrawUseCase_1.DeleteDrawUseCase(drawRepository);
 const generateShareTokenUseCase = new GenerateShareToken_1.GenerateShareToken(drawRepository);
 class DrawController {
