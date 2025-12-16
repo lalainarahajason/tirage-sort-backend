@@ -1,6 +1,7 @@
-// Mock uuid before importing the use case
-jest.mock('uuid', () => ({
-    v4: jest.fn(() => 'mocked-uuid-token-1234-5678-90ab-cdef'),
+// Mock crypto.randomUUID before importing the use case
+jest.mock('crypto', () => ({
+    ...jest.requireActual('crypto'),
+    randomUUID: jest.fn(() => 'mocked-uuid-token-1234-5678-90ab-cdef'),
 }));
 
 import { GenerateShareToken } from '../../src/application/use-cases/GenerateShareToken';
@@ -110,7 +111,7 @@ describe('GenerateShareToken', () => {
             });
         });
 
-        it('should call uuid v4 to generate token', async () => {
+        it('should use crypto.randomUUID to generate token', async () => {
             // Arrange
             mockDrawRepository.findById.mockResolvedValue(mockDraw);
             mockDrawRepository.update.mockResolvedValue({
