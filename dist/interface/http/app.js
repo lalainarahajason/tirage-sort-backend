@@ -46,6 +46,7 @@ const auth_routes_1 = require("./routes/auth.routes");
 const draws_routes_1 = require("./routes/draws.routes");
 const participants_routes_1 = require("./routes/participants.routes");
 const prizes_routes_1 = require("./routes/prizes.routes");
+const cron_routes_1 = __importDefault(require("./routes/cron.routes"));
 const app = (0, express_1.default)();
 // Middleware
 app.use(express_1.default.json());
@@ -67,6 +68,7 @@ app.use('/api/auth', auth_routes_1.authRouter);
 app.use('/api', draws_routes_1.drawsRouter);
 app.use('/api', participants_routes_1.participantsRouter);
 app.use('/api', prizes_routes_1.prizesRouter);
+app.use('/api/cron', cron_routes_1.default);
 // API Documentation with Redoc
 const path = __importStar(require("path"));
 const fs = __importStar(require("fs"));

@@ -1,6 +1,5 @@
 import { randomUUID, randomBytes } from 'crypto';
 import { IDrawRepository } from '../../domain/repositories/IDrawRepository';
-import { DrawVisibility } from '../../domain/entities/Draw';
 
 // Characters for short codes: A-Z, a-z, 0-9 (62 chars)
 const SHORTCODE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -38,9 +37,8 @@ export class GenerateShareToken {
         const shareToken = randomUUID();
         const shortCode = generateShortCode();
 
-        // Update the draw with SHARED visibility and the new codes
+        // Update the draw with the new share token and short code
         await this.drawRepository.update(drawId, {
-            visibility: DrawVisibility.SHARED,
             shareToken,
             shortCode
         });

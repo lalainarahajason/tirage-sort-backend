@@ -1,8 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GenerateShareToken = void 0;
-const uuid_1 = require("uuid");
-const Draw_1 = require("../../domain/entities/Draw");
+const crypto_1 = require("crypto");
+// Characters for short codes: A-Z, a-z, 0-9 (62 chars)
+const SHORTCODE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+const SHORTCODE_LENGTH = 8;
+function generateShortCode() {
+    const bytes = (0, crypto_1.randomBytes)(SHORTCODE_LENGTH);
+    let result = '';
+    for (let i = 0; i < SHORTCODE_LENGTH; i++) {
+        result += SHORTCODE_CHARS[bytes[i] % SHORTCODE_CHARS.length];
+    }
+    return result;
+}
 class GenerateShareToken {
     constructor(drawRepository) {
         this.drawRepository = drawRepository;
@@ -15,14 +25,15 @@ class GenerateShareToken {
         if (draw.userId !== userId) {
             throw new Error('Unauthorized');
         }
-        // Generate a unique token
-        const shareToken = (0, uuid_1.v4)();
-        // Update the draw with SHARED visibility and the new token
+        // Generate unique token and short code
+        const shareToken = (0, crypto_1.randomUUID)();
+        const shortCode = generateShortCode();
+        // Update the draw with the new share token and short code
         await this.drawRepository.update(drawId, {
-            visibility: Draw_1.DrawVisibility.SHARED,
-            shareToken
+            shareToken,
+            shortCode
         });
-        return shareToken;
+        return { shareToken, shortCode };
     }
 }
 exports.GenerateShareToken = GenerateShareToken;

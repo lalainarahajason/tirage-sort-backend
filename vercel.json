@@ -19,5 +19,11 @@
             "src": "/(.*)",
             "dest": "src/interface/http/server.ts"
         }
+    ],
+    "crons": [
+        {
+            "path": "/api/cron/process-scheduled-draws",
+            "schedule": "* * * * *"
+        }
     ]
 }

@@ -69,11 +69,37 @@ export class PrismaDrawRepository implements IDrawRepository {
         return found.map(this.mapToDomain);
     }
 
+    async findScheduledDraws(): Promise<Draw[]> {
+        const now = new Date();
+        const found = await prisma.draw.findMany({
+            where: {
+                scheduledAt: { lte: now },
+                status: { notIn: ['COMPLETED', 'IN_PROGRESS', 'ARCHIVED'] },
+            },
+            include: {
+                _count: {
+                    select: {
+                        participants: true,
+                        winners: true,
+                        prizes: true,
+                    },
+                },
+            },
+        });
+        return found.map(this.mapToDomain);
+    }
+
     async update(id: string, draw: Partial<Draw>): Promise<Draw> {
         const updated = await prisma.draw.update({
             where: { id },
             data: {
-                ...draw,
+                title: draw.title,
+                description: draw.description,
+                status: draw.status,
+                visibility: draw.visibility,
+                shareToken: draw.shareToken,
+                shortCode: draw.shortCode,
+                scheduledAt: draw.scheduledAt,
                 settings: draw.settings ? (draw.settings as any) : undefined,
             },
             include: {

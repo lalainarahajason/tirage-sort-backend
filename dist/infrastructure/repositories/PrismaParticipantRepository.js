@@ -51,6 +51,13 @@ class PrismaParticipantRepository {
             total,
         };
     }
+    async findAllByDrawId(drawId) {
+        const found = await prismaClient_1.prisma.participant.findMany({
+            where: { drawId },
+            orderBy: { name: 'asc' },
+        });
+        return found.map(this.mapToDomain);
+    }
     async findById(id) {
         const found = await prismaClient_1.prisma.participant.findUnique({
             where: { id },

@@ -12,6 +12,5 @@ var DrawStatus;
 var DrawVisibility;
 (function (DrawVisibility) {
     DrawVisibility["PUBLIC"] = "PUBLIC";
-    DrawVisibility["SHARED"] = "SHARED";
     DrawVisibility["PRIVATE"] = "PRIVATE";
 })(DrawVisibility || (exports.DrawVisibility = DrawVisibility = {}));

@@ -67,8 +67,25 @@ class DrawController {
         try {
             const userId = req.user.id;
             const drawId = req.params.id;
-            const shareToken = await generateShareTokenUseCase.execute(drawId, userId);
-            res.json({ shareToken });
+            const result = await generateShareTokenUseCase.execute(drawId, userId);
+            res.json(result);
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+    async getByShortCode(req, res, next) {
+        try {
+            const shortCode = req.params.code;
+            const draw = await drawRepository.findByShortCode(shortCode);
+            if (!draw) {
+                return res.status(404).json({ message: 'Draw not found' });
+            }
+            // Only allow access to SHARED or PUBLIC draws via shortCode
+            if (draw.visibility === 'PRIVATE') {
+                return res.status(403).json({ message: 'Access denied' });
+            }
+            res.json(draw);
         }
         catch (error) {
             next(error);

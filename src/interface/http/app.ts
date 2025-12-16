@@ -8,6 +8,7 @@ import { authRouter } from './routes/auth.routes';
 import { drawsRouter } from './routes/draws.routes';
 import { participantsRouter } from './routes/participants.routes';
 import { prizesRouter } from './routes/prizes.routes';
+import cronRoutes from './routes/cron.routes';
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use('/api/auth', authRouter);
 app.use('/api', drawsRouter);
 app.use('/api', participantsRouter);
 app.use('/api', prizesRouter);
+app.use('/api/cron', cronRoutes);
 
 // API Documentation with Redoc
 import * as path from 'path';

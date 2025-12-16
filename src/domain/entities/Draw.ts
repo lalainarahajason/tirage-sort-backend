@@ -8,7 +8,6 @@ export enum DrawStatus {
 
 export enum DrawVisibility {
     PUBLIC = 'PUBLIC',
-    SHARED = 'SHARED',
     PRIVATE = 'PRIVATE',
 }
 

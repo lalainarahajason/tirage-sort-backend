@@ -63,6 +63,14 @@ export class PrismaParticipantRepository implements IParticipantRepository {
         };
     }
 
+    async findAllByDrawId(drawId: string): Promise<Participant[]> {
+        const found = await prisma.participant.findMany({
+            where: { drawId },
+            orderBy: { name: 'asc' },
+        });
+        return found.map(this.mapToDomain);
+    }
+
     async findById(id: string): Promise<Participant | null> {
         const found = await prisma.participant.findUnique({
             where: { id },

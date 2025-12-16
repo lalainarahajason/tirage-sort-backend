@@ -47,17 +47,7 @@ export const checkDrawAccess = async (req: Request, res: Response, next: NextFun
             return next();
         }
 
-        // 3. SHARED draws require valid shareToken OR owner authentication
-        if (draw.visibility === 'SHARED') {
-            if (shareToken && shareToken === draw.shareToken) {
-                console.log('[checkDrawAccess] ✅ Valid shareToken, granting access');
-                return next(); // Valid share token
-            }
-            console.log('[checkDrawAccess] ❌ No valid shareToken, checking auth');
-            // No token or invalid token → check if owner
-        }
-
-        // 4. PRIVATE draws OR SHARED without valid token → verify owner
+        // 3. PRIVATE draws → verify owner
         const authHeader = req.headers.authorization;
 
         if (!authHeader) {

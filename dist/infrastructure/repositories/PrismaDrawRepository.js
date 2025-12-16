@@ -34,6 +34,21 @@ class PrismaDrawRepository {
         });
         return found ? this.mapToDomain(found) : null;
     }
+    async findByShortCode(shortCode) {
+        const found = await prismaClient_1.prisma.draw.findUnique({
+            where: { shortCode },
+            include: {
+                _count: {
+                    select: {
+                        participants: true,
+                        winners: true,
+                        prizes: true,
+                    },
+                },
+            },
+        });
+        return found ? this.mapToDomain(found) : null;
+    }
     async findAll(userId) {
         const found = await prismaClient_1.prisma.draw.findMany({
             where: { userId },
@@ -50,11 +65,36 @@ class PrismaDrawRepository {
         });
         return found.map(this.mapToDomain);
     }
+    async findScheduledDraws() {
+        const now = new Date();
+        const found = await prismaClient_1.prisma.draw.findMany({
+            where: {
+                scheduledAt: { lte: now },
+                status: { notIn: ['COMPLETED', 'IN_PROGRESS', 'ARCHIVED'] },
+            },
+            include: {
+                _count: {
+                    select: {
+                        participants: true,
+                        winners: true,
+                        prizes: true,
+                    },
+                },
+            },
+        });
+        return found.map(this.mapToDomain);
+    }
     async update(id, draw) {
         const updated = await prismaClient_1.prisma.draw.update({
             where: { id },
             data: {
-                ...draw,
+                title: draw.title,
+                description: draw.description,
+                status: draw.status,
+                visibility: draw.visibility,
+                shareToken: draw.shareToken,
+                shortCode: draw.shortCode,
+                scheduledAt: draw.scheduledAt,
                 settings: draw.settings ? draw.settings : undefined,
             },
             include: {
@@ -83,6 +123,7 @@ class PrismaDrawRepository {
             status: prismaDraw.status,
             visibility: prismaDraw.visibility,
             shareToken: prismaDraw.shareToken,
+            shortCode: prismaDraw.shortCode,
             scheduledAt: prismaDraw.scheduledAt,
             settings: prismaDraw.settings,
             createdAt: prismaDraw.createdAt,

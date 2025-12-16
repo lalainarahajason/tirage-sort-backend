@@ -13,7 +13,7 @@ const jwtService = new JwtService_1.JwtService();
  */
 const checkDrawAccess = async (req, res, next) => {
     try {
-        const drawId = req.params.id;
+        const drawId = req.params.id || req.params.drawId;
         const shareToken = req.query.shareToken;
         // 1. Fetch the draw to check visibility
         const draw = await prismaClient_1.prisma.draw.findUnique({
@@ -28,18 +28,21 @@ const checkDrawAccess = async (req, res, next) => {
         if (!draw) {
             return next(new AppError_1.AppError('Draw not found', 404));
         }
+        console.log('[checkDrawAccess] Draw:', {
+            id: draw.id,
+            visibility: draw.visibility,
+            hasShareToken: !!draw.shareToken,
+            shareTokenLength: draw.shareToken?.length
+        });
+        console.log('[checkDrawAccess] Request:', {
+            shareTokenParam: shareToken,
+            shareTokenMatch: shareToken === draw.shareToken
+        });
         // 2. PUBLIC draws are accessible to everyone
         if (draw.visibility === 'PUBLIC') {
             return next();
         }
-        // 3. SHARED draws require valid shareToken OR owner authentication
-        if (draw.visibility === 'SHARED') {
-            if (shareToken && shareToken === draw.shareToken) {
-                return next(); // Valid share token
-            }
-            // No token or invalid token → check if owner
-        }
-        // 4. PRIVATE draws OR SHARED without valid token → verify owner
+        // 3. PRIVATE draws → verify owner
         const authHeader = req.headers.authorization;
         if (!authHeader) {
             return next(new AppError_1.AppError('Access denied', 403));
@@ -57,7 +60,7 @@ const checkDrawAccess = async (req, res, next) => {
             }
             return next();
         }
-        catch (err) {
+        catch (_err) {
             return next(new AppError_1.AppError('Token invalid', 401));
         }
     }

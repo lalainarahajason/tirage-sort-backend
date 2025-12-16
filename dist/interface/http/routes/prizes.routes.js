@@ -4,6 +4,7 @@ exports.prizesRouter = void 0;
 const express_1 = require("express");
 const PrizeController_1 = require("../controllers/PrizeController");
 const authenticate_1 = require("../middlewares/authenticate");
+const checkDrawAccess_1 = require("../middlewares/checkDrawAccess");
 const router = (0, express_1.Router)();
 exports.prizesRouter = router;
 const prizeController = new PrizeController_1.PrizeController();
@@ -13,14 +14,17 @@ const prizeController = new PrizeController_1.PrizeController();
  *   get:
  *     summary: Get prizes for a draw
  *     tags: [Prizes]
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: drawId
  *         required: true
  *         schema:
  *           type: string
+ *       - in: query
+ *         name: shareToken
+ *         schema:
+ *           type: string
+ *         description: Share token for shared draws
  *     responses:
  *       200:
  *         description: List of prizes
@@ -53,7 +57,7 @@ const prizeController = new PrizeController_1.PrizeController();
  *       201:
  *         description: Prize added
  */
-router.get('/draws/:drawId/prizes', authenticate_1.authenticate, prizeController.getAll.bind(prizeController));
+router.get('/draws/:drawId/prizes', checkDrawAccess_1.checkDrawAccess, prizeController.getAll.bind(prizeController));
 router.post('/draws/:drawId/prizes', authenticate_1.authenticate, prizeController.create.bind(prizeController));
 /**
  * @swagger
