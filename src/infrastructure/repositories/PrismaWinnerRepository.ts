@@ -48,6 +48,8 @@ export class PrismaWinnerRepository implements IWinnerRepository {
                         name: true,
                         email: true,
                         ticketNumber: true,
+                        category: true,
+                        ticketCount: true,
                     },
                 },
                 prize: {
