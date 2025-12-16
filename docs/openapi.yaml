@@ -463,6 +463,31 @@ paths:
         '204':
           description: All participants cleared
 
+  /participants/history:
+    get:
+      tags:
+        - Participants
+      summary: Get participant history
+      description: Returns unique participants from the user's past draws, excluding those in the specified draw if provided.
+      parameters:
+        - name: excludeDrawId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Optional. ID of the draw to exclude participants from (e.g. current draw).
+      responses:
+        '200':
+          description: List of historical participants
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Participant'
+
+
   /participants/{id}:
     patch:
       tags:

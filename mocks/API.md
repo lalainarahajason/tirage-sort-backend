@@ -79,6 +79,7 @@ Based on the TypeScript interfaces defined in `frontend/types/schemas.ts`.
 | **Import** | `POST` | `/api/draws/:drawId/participants/import` | Bulk import (CSV/Excel) | `FormData` (field: `file`) <br/> **Expected CSV Columns:** <br/> `name` (required) <br/> `email` (optional) <br/> `category` (optional, string, default: STANDARD) <br/> `ticketCount` (optional, integer, default: 1) | `{ count: number, batchId: string }` |
 | **Delete** | `DELETE` | `/api/participants/:id` | Remove a participant | - | `void` |
 | **Clear** | `DELETE` | `/api/draws/:drawId/participants` | Remove ALL participants for a draw | - | `void` |
+| **History** | `GET` | `/api/participants/history` | Get unique participants from past draws | Query: `?excludeDrawId=...` | `Participant[]` |
 
 ---
 
