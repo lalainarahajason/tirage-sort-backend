@@ -16,6 +16,7 @@ Based on the TypeScript interfaces defined in `frontend/types/schemas.ts`.
   status: 'DRAFT' | 'READY' | 'IN_PROGRESS' | 'COMPLETED' | 'ARCHIVED';
   visibility: 'PUBLIC' | 'SHARED' | 'PRIVATE'; // Access control level
   shareToken?: string; // UUID - Token for SHARED access
+  shortCode?: string; // 8-char code for short share URLs (e.g., /s/X8K7m2nP)
   scheduledAt?: string; // ISO Date (Optional)
   settings: {
       mode: 'WITH_REPLACEMENT' | 'NO_REPLACEMENT';
@@ -49,7 +50,8 @@ Based on the TypeScript interfaces defined in `frontend/types/schemas.ts`.
 | **Create** | `POST` | `/api/draws` | Create a new draw | `Partial<Draw>` | `Draw` |
 | **Update** | `PATCH` | `/api/draws/:id` | Update draw (status, settings, visibility...) | `Partial<Draw>` | `Draw` |
 | **Delete** | `DELETE` | `/api/draws/:id` | Delete a draw | - | `void` |
-| **Share** | `POST` | `/api/draws/:id/share` | Generate share token (sets visibility to SHARED) | - | `{ shareToken: string }` |
+| **Share** | `POST` | `/api/draws/:id/share` | Generate share token (sets visibility to SHARED) | - | `{ shareToken: string, shortCode: string }` |
+| **Get by ShortCode** | `GET` | `/api/s/:code` | Get draw by short code (no auth needed) | - | `Draw` |
 
 ---
 

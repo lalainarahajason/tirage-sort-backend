@@ -52,6 +52,10 @@ components:
           format: uuid
           nullable: true
           description: Token for accessing SHARED draws
+        shortCode:
+          type: string
+          nullable: true
+          description: 8-character short code for short share URLs (e.g., /s/X8K7m2nP)
         createdAt:
           type: string
           format: date-time
@@ -572,3 +576,28 @@ paths:
       responses:
         '204':
           description: Prize deleted
+
+  /s/{code}:
+    get:
+      tags:
+        - Draws
+      summary: Get draw by short code
+      description: Retrieve a draw using its 8-character short code. No authentication required for PUBLIC or SHARED draws.
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 8-character short code (e.g., X8K7m2nP)
+      responses:
+        '200':
+          description: Draw details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Draw'
+        '403':
+          description: Access denied - Draw is private
+        '404':
+          description: Draw not found
