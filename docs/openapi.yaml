@@ -135,6 +135,16 @@ components:
           type: string
           format: date-time
 
+    WinnerWithDetails:
+      allOf:
+        - $ref: '#/components/schemas/Winner'
+        - type: object
+          properties:
+            participant:
+              $ref: '#/components/schemas/Participant'
+            prize:
+              $ref: '#/components/schemas/Prize'
+
     User:
       type: object
       properties:
@@ -555,6 +565,27 @@ paths:
       responses:
         '201':
           description: Prize added
+
+  /draws/{drawId}/winners:
+    get:
+      tags:
+        - Winners
+      summary: Get winners for a draw
+      parameters:
+        - name: drawId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of winners
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WinnerWithDetails'
 
   /prizes/{id}:
     patch:

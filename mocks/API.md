@@ -121,12 +121,21 @@ Based on the TypeScript interfaces defined in `frontend/types/schemas.ts`.
   prizeId: string; // UUID
   wonAt: string; // ISO Date
 }
+
+**WinnerWithDetails**
+```typescript
+{
+  ...Winner,
+  participant: Participant;
+  prize: Prize;
+}
+```
 ```
 
 ### Endpoints
 | Type | Method | Path | Description | Request Body | Response |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **List** | `GET` | `/api/draws/:drawId/winners` | Get winners for a draw | - | `Winner[]` |
+| **List** | `GET` | `/api/draws/:drawId/winners` | Get winners for a draw | - | `WinnerWithDetails[]` |
 
 ---
 
