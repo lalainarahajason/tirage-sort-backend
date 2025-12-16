@@ -25,4 +25,5 @@ export interface IParticipantRepository {
     deleteAllByDrawId(drawId: string): Promise<void>;
     countByDrawId(drawId: string): Promise<number>;
     findDistinctByUserId(userId: string): Promise<Participant[]>;
+    findByEmail(drawId: string, email: string): Promise<Participant | null>;
 }

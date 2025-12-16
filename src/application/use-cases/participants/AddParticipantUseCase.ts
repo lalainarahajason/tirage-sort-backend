@@ -24,6 +24,13 @@ export class AddParticipantUseCase {
 
         const ticketNumber = `T-${new Date().getFullYear()}-${randomUUID().substring(0, 8).toUpperCase()}`;
 
+        if (dto.email) {
+            const existing = await this.participantRepository.findByEmail(dto.drawId, dto.email);
+            if (existing) {
+                throw new AppError('Participant with this email already exists in the draw', 409);
+            }
+        }
+
         const newParticipant: Participant = {
             id: randomUUID(),
             drawId: dto.drawId,

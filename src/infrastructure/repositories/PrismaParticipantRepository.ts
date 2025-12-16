@@ -115,6 +115,16 @@ export class PrismaParticipantRepository implements IParticipantRepository {
         return found.map(this.mapToDomain);
     }
 
+    async findByEmail(drawId: string, email: string): Promise<Participant | null> {
+        const found = await prisma.participant.findFirst({
+            where: {
+                drawId,
+                email,
+            },
+        });
+        return found ? this.mapToDomain(found) : null;
+    }
+
     private mapToDomain(p: any): Participant {
         return {
             id: p.id,
