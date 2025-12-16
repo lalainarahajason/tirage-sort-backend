@@ -44,14 +44,14 @@ components:
           type: object
         visibility:
           type: string
-          enum: [PUBLIC, SHARED, PRIVATE]
+          enum: [PUBLIC, PRIVATE]
           default: PUBLIC
-          description: Draw visibility level (PUBLIC=anyone, SHARED=with token, PRIVATE=owner only)
+          description: Draw visibility level (PUBLIC=anyone via short URL, PRIVATE=owner only)
         shareToken:
           type: string
           format: uuid
           nullable: true
-          description: Token for accessing SHARED draws
+          description: Token for share URL generation
         shortCode:
           type: string
           nullable: true
@@ -265,19 +265,13 @@ paths:
         - Draws
       summary: Get draw by ID
       security: []
-      description: Access depends on visibility level. PUBLIC draws are open. SHARED draws require shareToken. PRIVATE requires authentication.
+      description: Access depends on visibility level. PUBLIC draws are open. PRIVATE requires authentication.
       parameters:
         - name: id
           in: path
           required: true
           schema:
             type: string
-        - name: shareToken
-          in: query
-          description: Token for accessing SHARED draws
-          schema:
-            type: string
-            format: uuid
       responses:
         '200':
           description: Draw details
@@ -312,7 +306,7 @@ paths:
                   type: string
                 visibility:
                   type: string
-                  enum: [PUBLIC, SHARED, PRIVATE]
+                  enum: [PUBLIC, PRIVATE]
       responses:
         '200':
           description: Draw updated
@@ -336,7 +330,7 @@ paths:
       tags:
         - Draws
       summary: Generate a share token for a draw
-      description: Generates a unique share token for the draw and sets visibility to SHARED
+      description: Generates a unique share token and short code for the draw
       parameters:
         - name: id
           in: path
@@ -582,7 +576,7 @@ paths:
       tags:
         - Draws
       summary: Get draw by short code
-      description: Retrieve a draw using its 8-character short code. No authentication required for PUBLIC or SHARED draws.
+      description: Retrieve a draw using its 8-character short code. No authentication required for PUBLIC draws.
       parameters:
         - name: code
           in: path
