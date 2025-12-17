@@ -23,7 +23,7 @@
     "crons": [
         {
             "path": "/api/cron/process-scheduled-draws",
-            "schedule": "* * * * *"
+            "schedule": "0 0 * * *"
         }
     ]
 }
