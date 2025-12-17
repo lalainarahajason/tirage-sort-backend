@@ -14,6 +14,12 @@ class AddParticipantUseCase {
             throw new AppError_1.AppError('Draw not found', 404);
         }
         const ticketNumber = `T-${new Date().getFullYear()}-${(0, crypto_1.randomUUID)().substring(0, 8).toUpperCase()}`;
+        if (dto.email) {
+            const existing = await this.participantRepository.findByEmail(dto.drawId, dto.email);
+            if (existing) {
+                throw new AppError_1.AppError('Participant with this email already exists in the draw', 409);
+            }
+        }
         const newParticipant = {
             id: (0, crypto_1.randomUUID)(),
             drawId: dto.drawId,

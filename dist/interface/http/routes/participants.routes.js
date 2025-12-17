@@ -64,6 +64,7 @@ const upload = (0, multer_1.default)({ storage: multer_1.default.memoryStorage()
  *         description: Participant added
  */
 router.get('/draws/:drawId/participants', checkDrawAccess_1.checkDrawAccess, participantController.getAll.bind(participantController));
+router.get('/participants/history', authenticate_1.authenticate, participantController.getHistory.bind(participantController));
 router.post('/draws/:drawId/participants', authenticate_1.authenticate, participantController.create.bind(participantController));
 /**
  * @swagger

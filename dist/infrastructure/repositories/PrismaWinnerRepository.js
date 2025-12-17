@@ -45,6 +45,8 @@ class PrismaWinnerRepository {
                         name: true,
                         email: true,
                         ticketNumber: true,
+                        category: true,
+                        ticketCount: true,
                     },
                 },
                 prize: {

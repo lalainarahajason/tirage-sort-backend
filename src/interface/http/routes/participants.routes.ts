@@ -8,6 +8,9 @@ const router = Router();
 const participantController = new ParticipantController();
 const upload = multer({ storage: multer.memoryStorage() });
 
+console.log('[ParticipantsRoutes] Loading routes...');
+
+
 /**
  * @swagger
  * /draws/{drawId}/participants:

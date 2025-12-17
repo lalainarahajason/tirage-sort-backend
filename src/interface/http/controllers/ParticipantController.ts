@@ -27,6 +27,7 @@ const getParticipantHistoryUseCase = new GetParticipantHistoryUseCase(participan
 export class ParticipantController {
     async getHistory(req: Request, res: Response, next: NextFunction) {
         try {
+            console.log('[ParticipantController] getHistory called', { user: req.user?.id, query: req.query });
             if (!req.user || !req.user.id) throw new AppError('Unauthorized', 401);
             const excludeDrawId = typeof req.query.excludeDrawId === 'string' ? req.query.excludeDrawId : undefined;
             const result = await getParticipantHistoryUseCase.execute(req.user.id, excludeDrawId);

@@ -13,6 +13,12 @@ import cronRoutes from './routes/cron.routes';
 
 const app = express();
 
+// DEBUG: Log all requests
+app.use((req, res, next) => {
+    console.log(`[DEBUG] ${req.method} ${req.path}`);
+    next();
+});
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

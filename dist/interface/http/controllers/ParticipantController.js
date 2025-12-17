@@ -15,6 +15,7 @@ const ClearParticipantsUseCase_1 = require("../../../application/use-cases/parti
 const PrismaParticipantRepository_1 = require("../../../infrastructure/repositories/PrismaParticipantRepository");
 const PrismaDrawRepository_1 = require("../../../infrastructure/repositories/PrismaDrawRepository");
 const AppError_1 = require("../../../shared/errors/AppError");
+const GetParticipantHistoryUseCase_1 = require("../../../application/use-cases/participants/GetParticipantHistoryUseCase");
 const participantRepository = new PrismaParticipantRepository_1.PrismaParticipantRepository();
 const drawRepository = new PrismaDrawRepository_1.PrismaDrawRepository();
 const addParticipantUseCase = new AddParticipantUseCase_1.AddParticipantUseCase(participantRepository, drawRepository);
@@ -23,7 +24,20 @@ const importParticipantsUseCase = new ImportParticipantsUseCase_1.ImportParticip
 const updateParticipantUseCase = new UpdateParticipantUseCase_1.UpdateParticipantUseCase(participantRepository);
 const deleteParticipantUseCase = new DeleteParticipantUseCase_1.DeleteParticipantUseCase(participantRepository);
 const clearParticipantsUseCase = new ClearParticipantsUseCase_1.ClearParticipantsUseCase(participantRepository, drawRepository);
+const getParticipantHistoryUseCase = new GetParticipantHistoryUseCase_1.GetParticipantHistoryUseCase(participantRepository);
 class ParticipantController {
+    async getHistory(req, res, next) {
+        try {
+            if (!req.user || !req.user.id)
+                throw new AppError_1.AppError('Unauthorized', 401);
+            const excludeDrawId = typeof req.query.excludeDrawId === 'string' ? req.query.excludeDrawId : undefined;
+            const result = await getParticipantHistoryUseCase.execute(req.user.id, excludeDrawId);
+            res.json(result);
+        }
+        catch (error) {
+            next(error);
+        }
+    }
     async create(req, res, next) {
         try {
             const result = await addParticipantUseCase.execute({
