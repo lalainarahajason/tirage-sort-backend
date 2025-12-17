@@ -10,8 +10,17 @@ jobs:
   cron:
     runs-on: ubuntu-latest
     steps:
+      - name: Debug Secret Availability
+        run: |
+          if [ -z "${{ secrets.BACKEND_URL }}" ]; then
+            echo "Error: BACKEND_URL secret is empty or not found."
+            exit 1
+          else
+            echo "BACKEND_URL is set."
+          fi
+
       - name: Call Vercel Cron Endpoint
         run: |
           curl -X POST \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
-            ${{ secrets.BACKEND_URL }}/api/cron/process-scheduled-draws
+            "${{ secrets.BACKEND_URL }}/api/cron/process-scheduled-draws"
