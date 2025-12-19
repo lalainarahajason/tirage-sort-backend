@@ -2,7 +2,7 @@
 
 ## Repository
 
-**GitHub Repository**: `git@github.com:lalainarahajason/tirage-sort-backend.git`
+**GitHub Repository**: `https://github.com/devkodekloud-code/tirage-sort-backend.git`
 
 ## Architecture
 
