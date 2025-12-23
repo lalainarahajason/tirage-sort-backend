@@ -70,11 +70,11 @@ export class PrismaDrawRepository implements IDrawRepository {
     }
 
     async findScheduledDraws(): Promise<Draw[]> {
-        // Find draws scheduled more than 5 minutes ago (gives 5 min grace period for manual launch)
-        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+        // Find draws scheduled in the past that are not completed
+        const now = new Date();
         const found = await prisma.draw.findMany({
             where: {
-                scheduledAt: { lte: fiveMinutesAgo },
+                scheduledAt: { lte: now },
                 status: { notIn: ['COMPLETED', 'IN_PROGRESS', 'ARCHIVED'] },
             },
             include: {
