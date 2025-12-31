@@ -29,8 +29,11 @@ export class ExecuteDrawUseCase {
             throw new AppError('Draw not found', 404);
         }
 
+        console.log(`🎰 Executing draw ${drawId} - Title: ${draw.title}`);
+
         // Check if already completed
         if (draw.status === DrawStatus.COMPLETED) {
+            console.log(`⚠️ Draw ${drawId} already COMPLETED`);
             return { drawId, winnersCount: 0, status: DrawStatus.COMPLETED };
         }
 
@@ -42,8 +45,17 @@ export class ExecuteDrawUseCase {
             const participants = await this.participantRepository.findAllByDrawId(drawId);
             const prizes = await this.prizeRepository.findByDrawId(drawId);
 
+            console.log(`👥 Participants: ${participants.length}, 🎁 Prizes types: ${prizes.length}`);
+
             if (participants.length === 0) {
                 // No participants, mark as completed
+                console.log('⚠️ No participants found. Completing draw.');
+                await this.drawRepository.update(drawId, { status: DrawStatus.COMPLETED });
+                return { drawId, winnersCount: 0, status: DrawStatus.COMPLETED };
+            }
+
+            if (prizes.length === 0) {
+                console.log('⚠️ No prizes found. Completing draw.');
                 await this.drawRepository.update(drawId, { status: DrawStatus.COMPLETED });
                 return { drawId, winnersCount: 0, status: DrawStatus.COMPLETED };
             }
@@ -76,9 +88,13 @@ export class ExecuteDrawUseCase {
                         if (draw.settings.mode === 'NO_REPLACEMENT') {
                             usedParticipantIds.add(winner.id);
                         }
+                    } else {
+                        console.warn('⚠️ Could not select a winner (pool exhausted?)');
                     }
                 }
             }
+
+            console.log(`🏆 Selected ${winners.length} winners.`);
 
             // Create winners in batch
             if (winners.length > 0) {
@@ -90,6 +106,7 @@ export class ExecuteDrawUseCase {
 
             return { drawId, winnersCount: winners.length, status: DrawStatus.COMPLETED };
         } catch (error) {
+            console.error('❌ Error executing draw:', error);
             // Rollback to READY on error
             await this.drawRepository.update(drawId, { status: DrawStatus.READY });
             throw error;
@@ -109,15 +126,22 @@ export class ExecuteDrawUseCase {
         }
 
         if (pool.length === 0) {
+            console.warn('⚠️ Participant pool is empty.');
             return null;
         }
 
         // Weighted random selection based on ticketCount
         const weightedPool: Participant[] = [];
         for (const p of pool) {
-            for (let i = 0; i < (p.ticketCount || 1); i++) {
+            const ticketCount = p.ticketCount && p.ticketCount > 0 ? p.ticketCount : 1;
+            for (let i = 0; i < ticketCount; i++) {
                 weightedPool.push(p);
             }
+        }
+
+        if (weightedPool.length === 0) {
+            console.warn('⚠️ Weighted pool is empty.');
+            return null;
         }
 
         const randomIndex = Math.floor(Math.random() * weightedPool.length);

@@ -5,11 +5,17 @@ import { GetDrawUseCase } from '../../../application/use-cases/draws/GetDrawUseC
 import { UpdateDrawUseCase } from '../../../application/use-cases/draws/UpdateDrawUseCase';
 import { DeleteDrawUseCase } from '../../../application/use-cases/draws/DeleteDrawUseCase';
 import { GenerateShareToken } from '../../../application/use-cases/GenerateShareToken';
+import { ExecuteDrawUseCase } from '../../../application/use-cases/draws/ExecuteDrawUseCase';
 import { PrismaDrawRepository } from '../../../infrastructure/repositories/PrismaDrawRepository';
 import { PrismaWinnerRepository } from '../../../infrastructure/repositories/PrismaWinnerRepository';
+import { PrismaParticipantRepository } from '../../../infrastructure/repositories/PrismaParticipantRepository';
+import { PrismaPrizeRepository } from '../../../infrastructure/repositories/PrismaPrizeRepository';
+import { SocketService } from '../../../infrastructure/services/SocketService';
 
 const drawRepository = new PrismaDrawRepository();
 const winnerRepository = new PrismaWinnerRepository();
+const participantRepository = new PrismaParticipantRepository();
+const prizeRepository = new PrismaPrizeRepository();
 
 const createDrawUseCase = new CreateDrawUseCase(drawRepository);
 const getDrawsUseCase = new GetDrawsUseCase(drawRepository);
@@ -17,6 +23,7 @@ const getDrawUseCase = new GetDrawUseCase(drawRepository);
 const updateDrawUseCase = new UpdateDrawUseCase(drawRepository, winnerRepository);
 const deleteDrawUseCase = new DeleteDrawUseCase(drawRepository);
 const generateShareTokenUseCase = new GenerateShareToken(drawRepository);
+const executeDrawUseCase = new ExecuteDrawUseCase(drawRepository, participantRepository, prizeRepository, winnerRepository);
 
 export class DrawController {
     async create(req: Request, res: Response, next: NextFunction) {
@@ -92,6 +99,30 @@ export class DrawController {
             }
 
             res.json(draw);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async execute(req: Request, res: Response, next: NextFunction) {
+        try {
+            const drawId = req.params.id;
+            const socketService = SocketService.getInstance();
+
+            // Notify start
+            socketService.emitDrawStarted(drawId);
+
+            // Wait for 5 seconds to simulate the draw animation (Spinning)
+            // This enhances the UX so it doesn't feel instant/broken
+            await new Promise(resolve => setTimeout(resolve, 5000));
+
+            // Execute draw logic
+            const result = await executeDrawUseCase.execute(drawId);
+
+            // Notify completion
+            socketService.emitWinnerSelected(drawId, { count: result.winnersCount });
+
+            res.json(result);
         } catch (error) {
             next(error);
         }

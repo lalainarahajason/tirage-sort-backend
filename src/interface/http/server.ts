@@ -1,12 +1,20 @@
 import 'dotenv/config';
+import http from 'http';
 import app from './app';
 import { logger } from '../../shared/utils/logger';
+import { SocketService } from '../../infrastructure/services/SocketService';
 
 const PORT = process.env.PORT || 3000;
 
+// Create HTTP Server
+const httpServer = http.createServer(app);
+
+// Initialize Socket.io
+SocketService.getInstance().initialize(httpServer);
+
 // For local development
 if (process.env.NODE_ENV !== 'production') {
-    app.listen(PORT, () => {
+    httpServer.listen(PORT, () => {
         logger.info(`Server is running on port ${PORT}`);
 
         // Local Cron Simulation
@@ -40,4 +48,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Export for Vercel
-export default app;
+// Note: Vercel serverless functions work differently, they export 'app'.
+// If deploying to Vercel primarily as API routes, WebSockets might have limitations (serverless).
+// But for standard Node server or container, this is correct.
+export default httpServer;

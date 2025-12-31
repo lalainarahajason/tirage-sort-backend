@@ -147,4 +147,33 @@ router.post('/draws/:id/share', authenticate, drawController.generateShareToken.
  */
 router.get('/s/:code', drawController.getByShortCode.bind(drawController));
 
+/**
+ * @swagger
+ * /draws/{id}/execute:
+ *   post:
+ *     summary: Manually execute a draw immediately
+ *     tags: [Draws]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Draw executed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 processedCount:
+ *                   type: number
+ *                 winnersCount:
+ *                   type: number
+ */
+router.post('/draws/:id/execute', authenticate, drawController.execute.bind(drawController));
+
 export { router as drawsRouter };

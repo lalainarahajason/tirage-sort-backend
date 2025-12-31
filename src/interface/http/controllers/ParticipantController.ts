@@ -12,6 +12,7 @@ import { PrismaDrawRepository } from '../../../infrastructure/repositories/Prism
 import { AppError } from '../../../shared/errors/AppError';
 
 import { GetParticipantHistoryUseCase } from '../../../application/use-cases/participants/GetParticipantHistoryUseCase';
+import { SocketService } from '../../../infrastructure/services/SocketService';
 
 const participantRepository = new PrismaParticipantRepository();
 const drawRepository = new PrismaDrawRepository();
@@ -43,6 +44,10 @@ export class ParticipantController {
                 ...req.body,
                 drawId: req.params.drawId,
             });
+
+            // Emit Socket Event
+            SocketService.getInstance().emitParticipantAdded(req.params.drawId, result);
+
             res.status(201).json(result);
         } catch (error) {
             next(error);
